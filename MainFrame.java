@@ -3,6 +3,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -97,6 +100,12 @@ public class MainFrame extends JFrame {
                     selectedFileName = fileChooser.getSelectedFile().getName();
                     JOptionPane.showMessageDialog(MainFrame.this, "Arquivo selecionado: " + selectedFileName);
                 }
+
+                try {
+                    server.sendMessage("4 " + selectedFileName + " ind.bin");
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
             }
         });
 
@@ -158,10 +167,14 @@ public class MainFrame extends JFrame {
         buscaPanel.add(tfNacionalidade);
         buscaPanel.add(lbNomeClube);
         buscaPanel.add(tfNomeClube);
-
+        
         /***************** Painel Botao ****************/
         JButton btnBuscar = new JButton("Buscar");
         btnBuscar.setFont(mainFont);
+
+        JButton btnLimpar = new JButton("Limpar");
+        btnLimpar.setFont(mainFont);
+
         btnBuscar.addActionListener(new ActionListener() {
 
             @Override
@@ -206,8 +219,6 @@ public class MainFrame extends JFrame {
             }
         });
 
-        JButton btnLimpar = new JButton("Limpar");
-        btnLimpar.setFont(mainFont);
         btnLimpar.addActionListener(new ActionListener() {
 
             @Override
@@ -263,6 +274,7 @@ public class MainFrame extends JFrame {
         setMinimumSize(new Dimension(300, 400));
         setJMenuBar(menuBar);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
         setVisible(true);
     }
     
@@ -294,14 +306,74 @@ public class MainFrame extends JFrame {
     }
 
     private void showPlayerDetails(String playerInfo) {
-        JFrame detailsFrame = new JFrame("Detalhes do Jogador");
-        JTextArea textArea = new JTextArea(playerInfo);
-        textArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(textArea);
-        detailsFrame.getContentPane().add(scrollPane, BorderLayout.CENTER);
-        detailsFrame.setSize(300, 200);
-        detailsFrame.setLocationRelativeTo(null);
-        detailsFrame.setVisible(true);
+        /***************** Painel Botoes ****************/
+		JButton btnAplicar = new JButton("Aplicar");
+		btnAplicar.setFont(mainFont);
+
+        JButton btnRemover = new JButton("Remover");
+        btnRemover.setFont(mainFont);
+
+		btnAplicar.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//aplicar alteracoes nos dados do jogador
+			}
+		});
+
+        btnRemover.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //enviar comando de remocao
+            }
+            
+        });
+
+        JPanel botaoPanelEdit = new JPanel();
+        botaoPanelEdit.setLayout(new GridLayout(1, 2, 5, 5));
+        botaoPanelEdit.setOpaque(false);
+        botaoPanelEdit.add(btnAplicar);
+        botaoPanelEdit.add(btnRemover);
+
+        /***************** Painel Dados ****************/
+        JFrame editFrame = new JFrame("Editar dados");
+        editFrame.setLayout(new BorderLayout());
+    
+        // Use regex to extract player details
+        Pattern pattern = Pattern.compile("Nome do Jogador: (.*?)<br>Nacionalidade do Jogador: (.*?)<br>Clube do Jogador: (.*?)<br><br>(.*)</html>", Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(playerInfo);
+    
+        String playerName = "";
+        String playerNationality = "";
+        String playerClub = "";
+    
+        if (matcher.find()) {
+            playerName = matcher.group(1);
+            playerNationality = matcher.group(2);
+            playerClub = matcher.group(3);
+        }
+    
+        // Panel for editable fields
+        JPanel editablePanel = new JPanel(new GridLayout(3, 2));
+        editablePanel.add(new JLabel("Nome do Jogador:"));
+        JTextField playerNameField = new JTextField(playerName);
+        editablePanel.add(playerNameField);
+    
+        editablePanel.add(new JLabel("Nacionalidade do Jogador:"));
+        JTextField playerNationalityField = new JTextField(playerNationality);
+        editablePanel.add(playerNationalityField);
+    
+        editablePanel.add(new JLabel("Clube do Jogador:"));
+        JTextField playerClubField = new JTextField(playerClub);
+        editablePanel.add(playerClubField);
+    
+        editFrame.add(editablePanel, BorderLayout.NORTH);
+        editFrame.add(botaoPanelEdit, BorderLayout.SOUTH);
+    
+        editFrame.setSize(500, 250);
+        editFrame.setLocationRelativeTo(null);
+        editFrame.setVisible(true);
     }
 
     public static void main(String[] args) {

@@ -59,6 +59,7 @@ public class ConnectDialog extends JDialog {
         connectPanel.add(escritaPanel, BorderLayout.NORTH);
         connectPanel.add(btnConectar, BorderLayout.SOUTH);
 
+        setLocationRelativeTo(null);
         add(connectPanel);
     }
 
