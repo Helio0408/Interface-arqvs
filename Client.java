@@ -2,7 +2,7 @@ import java.io.*;
 import java.net.*;
 
 public class Client {
-    private static final int HEADER = 64;
+    private static final int HEADER = 256;
     private static final String FORMAT = "UTF-8";
     private static final String DISCONNECT_MESSAGE = "!SAI";
     private String host;
@@ -68,8 +68,10 @@ public class Client {
         while (sendLength.length() < HEADER) {
             sendLength += " ";
         }
+		writer.flush();
         writer.print(sendLength);
         writer.flush();
+		output.flush();
         output.write(message);
         output.flush();
 

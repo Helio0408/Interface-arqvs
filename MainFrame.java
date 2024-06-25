@@ -132,11 +132,13 @@ public class MainFrame extends JFrame {
                     JOptionPane.showMessageDialog(MainFrame.this, "Arquivo selecionado: " + selectedFileName);
                 }
 
+				/*
                 try {
                     server.sendMessage("4 " + selectedFileName + " ind.bin");
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
+				*/
             }
         });
 
@@ -145,8 +147,9 @@ public class MainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    String response = server.sendMessage("3 " + selectedFileName + "1\n0\n");
-                    processPlayersList(response); // Processa a resposta do servidor
+                    //String response = server.sendMessage("3 " + selectedFileName + "1\n0\n");
+                    String response = server.sendMessage("2 " + selectedFileName);
+                    openScrollableWindow(response); // Processa a resposta do servidor
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -239,6 +242,7 @@ public class MainFrame extends JFrame {
                     cont++;
                 }
                     
+				if(cont != 0){
                     try {
                         res = server.sendMessage("3 " + selectedFileName + " 1\n" + cont + " " + res);
                         res = res.substring(8);
@@ -246,6 +250,7 @@ public class MainFrame extends JFrame {
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
+				}
 
             }
         });
@@ -308,6 +313,24 @@ public class MainFrame extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
     }
+
+    private void openScrollableWindow(String response) {
+		JFrame newFrame = new JFrame("Todos os registros");
+        newFrame.setSize(600, 400);
+
+        JTextArea textArea = new JTextArea(response);
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.setEditable(false);
+		textArea.setFont(mainFont);
+
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        newFrame.add(scrollPane);
+        newFrame.setVisible(true);
+	}
     
     private void processPlayersList(String response) {
         playersListModel.clear(); // Limpa a lista atual
@@ -326,7 +349,7 @@ public class MainFrame extends JFrame {
                 sb.setLength(0); // Limpa o StringBuilder para o próximo conjunto de cinco linhas
             }
 
-			if(i > 100) break;
+			//if(i > 100) break;
         }
     }
 

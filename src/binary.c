@@ -520,6 +520,11 @@ void bin_SelectFrom(char *entrada){
 		if(reg == NULL)
 			continue;
 
+		if(reg->removido == '1'){
+			register_free(reg);
+			continue;
+		}
+
 		register_printAll(reg);
 
 		register_free(reg);
