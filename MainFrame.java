@@ -319,8 +319,8 @@ public class MainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    server.sendMessage("5 " + selectedFileName + " ind.bin 1\n1 id " + playerId);
-                    server.sendMessage("6 " + selectedFileName + " ind.bin 1\n" + playerIdField.getText() + " " + playerAgeField.getText() + " " + playerNameField.getText() + " " + playerNationalityField.getText() + " " + playerClubField.getText());
+                    //server.sendMessage("5 " + selectedFileName + " ind.bin 1\n1 id " + playerId);
+                    server.sendMessage("6 " + selectedFileName + " ind.bin 1\n" + playerIdField.getText() + " " + playerAgeField.getText() + " \"" + playerNameField.getText().toUpperCase() + "\" \"" + playerNationalityField.getText().toUpperCase() + "\" \"" + playerClubField.getText().toUpperCase() + "\"");
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
