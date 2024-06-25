@@ -11,6 +11,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+/* Trabalho de POO feito pelos alunos:
+ * Hélio Márcio Cabral Santos - N° USP: 14577862
+ * Gabriel Martins Monteiro - N° USP: 14572099
+ * Eduardo de Luna Freire - N° USP: 14567304*/
+
 public class MainFrame extends JFrame {
     private Font mainFont = new Font("Segoe print", Font.BOLD, 18);
     private JList<String> playersList;
@@ -132,13 +137,6 @@ public class MainFrame extends JFrame {
                     JOptionPane.showMessageDialog(MainFrame.this, "Arquivo selecionado: " + selectedFileName);
                 }
 
-				/*
-                try {
-                    server.sendMessage("4 " + selectedFileName + " ind.bin");
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-				*/
             }
         });
 
@@ -147,7 +145,6 @@ public class MainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    //String response = server.sendMessage("3 " + selectedFileName + "1\n0\n");
                     String response = server.sendMessage("2 " + selectedFileName);
                     openScrollableWindow(response); // Processa a resposta do servidor
                 } catch (IOException e1) {
@@ -361,8 +358,11 @@ public class MainFrame extends JFrame {
             return label;
         }
     }
-
+    
     private void showPlayerDetails(String playerInfo) {
+        JFrame editFrame = new JFrame("Editar dados");
+        editFrame.setLayout(new BorderLayout());
+
         /***************** Painel Botoes ****************/
         JButton btnAplicar = new JButton("Aplicar");
         btnAplicar.setFont(mainFont);
@@ -379,6 +379,7 @@ public class MainFrame extends JFrame {
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
+                editFrame.dispose();
             }
         });
 
@@ -390,6 +391,7 @@ public class MainFrame extends JFrame {
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
+                editFrame.dispose();
             }
         });
 
@@ -400,9 +402,6 @@ public class MainFrame extends JFrame {
         botaoPanelEdit.add(btnRemover);
 
         /***************** Painel Dados ****************/
-        JFrame editFrame = new JFrame("Editar dados");
-        editFrame.setLayout(new BorderLayout());
-
         // Use regex to extract player details
         Pattern pattern = Pattern.compile(
             "ID : (.*?)<br>Idade: (.*?)<br>Nome do Jogador: (.*?)<br>Nacionalidade do Jogador: (.*?)<br>Clube do Jogador: (.*?)<br>", 

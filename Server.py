@@ -4,7 +4,7 @@ import subprocess
 
 HEADER = 256
 HOST = socket.gethostbyname(socket.gethostname())  # Endereço IP do servidor (localhost)
-PORT = 5051  # Porta que o servidor irá escutar
+PORT = 5050  # Porta que o servidor irá escutar
 ADDR = (HOST, PORT)
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!SAI"
