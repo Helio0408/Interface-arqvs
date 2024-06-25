@@ -89,6 +89,20 @@ void register_print(REGISTER *reg){
 	register_printStr(reg->nomeClube, reg->tamNomeClube);
 }
 
+void register_printAll(REGISTER *reg){
+	printf("ID : %d\n", reg->id);
+	printf("Idade: %d\n", reg->idade);
+
+	printf("Nome do Jogador: ");
+	register_printStr(reg->nomeJogador, reg->tamNomeJog);
+
+	printf("Nacionalidade do Jogador: ");
+	register_printStr(reg->nacionalidade, reg->tamNacionalidade);
+	
+	printf("Clube do Jogador: ");
+	register_printStr(reg->nomeClube, reg->tamNomeClube);
+}
+
 void register_debug(REGISTER *reg){
 	printf("removido: %c\n", reg->removido);
 	printf("tamanho: %d, %x\n", reg->tamanhoRegistro, reg->tamanhoRegistro);

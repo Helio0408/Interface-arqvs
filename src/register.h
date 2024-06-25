@@ -24,6 +24,9 @@ void register_write(FILE *file, REGISTER *reg);
 /* Imprime o registro na tela */
 void register_print(REGISTER *reg);
 
+/* Imprime tudo */
+void register_printAll(REGISTER *reg);
+
 /* Função de debug */
 void register_debug(REGISTER *reg);
 

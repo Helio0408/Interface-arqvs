@@ -15,6 +15,8 @@ public class MainFrame extends JFrame {
     private Font mainFont = new Font("Segoe print", Font.BOLD, 18);
     private JList<String> playersList;
     private DefaultListModel<String> playersListModel;
+    private String playerId, playerAge, playerName, playerNationality, playerClub;
+    private JTextField playerIdField, playerAgeField, playerNameField, playerNationalityField, playerClubField;
     JTextField tfID, tfIdade, tfNomeJogador, tfNacionalidade, tfNomeClube;
     Client server;
     String selectedFileName;
@@ -196,21 +198,21 @@ public class MainFrame extends JFrame {
                     cont++;
                 }
                 if(!NomeJogador.isEmpty()){
-                    res += "nomeJogador \"" + NomeJogador + "\" ";
+                    res += "nomeJogador \"" + NomeJogador.toUpperCase() + "\" ";
                     cont++;
                 }
                 if(!Nacionalidade.isEmpty()){
-                    res += "nacionalidade \"" + Nacionalidade + "\" ";
+                    res += "nacionalidade \"" + Nacionalidade.toUpperCase() + "\" ";
                     cont++;
                 }
                 if(!NomeClube.isEmpty()){
-                    res += "nomeClube \"" + NomeClube + "\" ";
+                    res += "nomeClube \"" + NomeClube.toUpperCase() + "\" ";
                     cont++;
                 }
                     
                     try {
-                        server.sendMessage("3 " + selectedFileName + " 1");
-                        res = server.sendMessage(cont + " " + res);
+                        res = server.sendMessage("3 " + selectedFileName + " 1\n" + cont + " " + res);
+                        res = res.substring(8);
                         processPlayersList(res);
                     } catch (IOException e1) {
                         e1.printStackTrace();
@@ -288,11 +290,11 @@ public class MainFrame extends JFrame {
         for (int i = 0; i < lines.length; i++) {
             sb.append(lines[i]).append("<br>");
 
-            // Se chegou ao final de um conjunto de três linhas ou é a última linha
-            if ((i + 1) % 4 == 0 || i == lines.length - 1) {
-                // Adiciona o conjunto de três linhas como um único item formatado em HTML na lista
+            // Se chegou ao final de um conjunto de cinco linhas ou é a última linha
+            if ((i + 1) % 6 == 0 || i == lines.length - 1) {
+                // Adiciona o conjunto de cinco linhas como um único item formatado em HTML na lista
                 playersListModel.addElement("<html>" + sb.toString().trim() + "</html>");
-                sb.setLength(0); // Limpa o StringBuilder para o próximo conjunto de três linhas
+                sb.setLength(0); // Limpa o StringBuilder para o próximo conjunto de cinco linhas
             }
         }
     }
@@ -307,27 +309,33 @@ public class MainFrame extends JFrame {
 
     private void showPlayerDetails(String playerInfo) {
         /***************** Painel Botoes ****************/
-		JButton btnAplicar = new JButton("Aplicar");
-		btnAplicar.setFont(mainFont);
+        JButton btnAplicar = new JButton("Aplicar");
+        btnAplicar.setFont(mainFont);
 
         JButton btnRemover = new JButton("Remover");
         btnRemover.setFont(mainFont);
 
-		btnAplicar.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//aplicar alteracoes nos dados do jogador
-			}
-		});
-
-        btnRemover.addActionListener(new ActionListener() {
-
+        btnAplicar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //enviar comando de remocao
+                try {
+                    server.sendMessage("5 " + selectedFileName + " ind.bin 1\n1 id " + playerId);
+                    server.sendMessage("6 " + selectedFileName + " ind.bin 1\n" + playerIdField.getText() + " " + playerAgeField.getText() + " " + playerNameField.getText() + " " + playerNationalityField.getText() + " " + playerClubField.getText());
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
             }
-            
+        });
+
+        btnRemover.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    server.sendMessage("5 " + selectedFileName + " ind.bin 1\n1 id " + playerId);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
         });
 
         JPanel botaoPanelEdit = new JPanel();
@@ -339,42 +347,53 @@ public class MainFrame extends JFrame {
         /***************** Painel Dados ****************/
         JFrame editFrame = new JFrame("Editar dados");
         editFrame.setLayout(new BorderLayout());
-    
+
         // Use regex to extract player details
-        Pattern pattern = Pattern.compile("Nome do Jogador: (.*?)<br>Nacionalidade do Jogador: (.*?)<br>Clube do Jogador: (.*?)<br><br>(.*)</html>", Pattern.DOTALL);
+        Pattern pattern = Pattern.compile(
+            "ID : (.*?)<br>Idade: (.*?)<br>Nome do Jogador: (.*?)<br>Nacionalidade do Jogador: (.*?)<br>Clube do Jogador: (.*?)<br>", 
+            Pattern.DOTALL
+        );
         Matcher matcher = pattern.matcher(playerInfo);
-    
-        String playerName = "";
-        String playerNationality = "";
-        String playerClub = "";
-    
+
         if (matcher.find()) {
-            playerName = matcher.group(1);
-            playerNationality = matcher.group(2);
-            playerClub = matcher.group(3);
+            playerId = matcher.group(1).trim();
+            playerAge = matcher.group(2).trim();
+            playerName = matcher.group(3).trim();
+            playerNationality = matcher.group(4).trim();
+            playerClub = matcher.group(5).trim();
         }
-    
+
         // Panel for editable fields
-        JPanel editablePanel = new JPanel(new GridLayout(3, 2));
+        JPanel editablePanel = new JPanel(new GridLayout(5, 2));
+        
+        editablePanel.add(new JLabel("ID:"));
+        playerIdField = new JTextField(playerId);
+        editablePanel.add(playerIdField);
+        
+        editablePanel.add(new JLabel("Idade:"));
+        playerAgeField = new JTextField(playerAge);
+        editablePanel.add(playerAgeField);
+        
         editablePanel.add(new JLabel("Nome do Jogador:"));
-        JTextField playerNameField = new JTextField(playerName);
+        playerNameField = new JTextField(playerName);
         editablePanel.add(playerNameField);
-    
+        
         editablePanel.add(new JLabel("Nacionalidade do Jogador:"));
-        JTextField playerNationalityField = new JTextField(playerNationality);
+        playerNationalityField = new JTextField(playerNationality);
         editablePanel.add(playerNationalityField);
-    
+        
         editablePanel.add(new JLabel("Clube do Jogador:"));
-        JTextField playerClubField = new JTextField(playerClub);
+        playerClubField = new JTextField(playerClub);
         editablePanel.add(playerClubField);
-    
+
         editFrame.add(editablePanel, BorderLayout.NORTH);
         editFrame.add(botaoPanelEdit, BorderLayout.SOUTH);
-    
-        editFrame.setSize(500, 250);
+
+        editFrame.setSize(500, 300);
         editFrame.setLocationRelativeTo(null);
         editFrame.setVisible(true);
     }
+    
 
     public static void main(String[] args) {
         MainFrame myFrame = new MainFrame();

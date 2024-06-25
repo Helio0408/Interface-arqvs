@@ -13,6 +13,7 @@
  * 		- register.h    -- funções relacionadas à manipulação de registros.
  * 		- csv.h         -- funções relacionadas a leitura de um csv e um parser de csv 
  * 		- binary.h      -- funções relacionadas às operações binárias que podem ser feitas num arquivo
+ * 		- indice.h      -- funções relacionadas ao armazenamento do índice em memória primária
  * 	Makefile            -- arquivo Makefile para compilação
  *
  * 	Todos as implementações dessas funções estão em seus respectivos .c */

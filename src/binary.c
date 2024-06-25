@@ -19,6 +19,7 @@ static void bin_SearchAndDelete(FILE *file, INDICE *indice, REGISTER *base);
 /* Essa função é a que faz o papel de deletar o registro e pô-lo na lista de registros deletados */
 static void bin_DeleteAuxList(FILE *file, HEADER *header, REGISTER *reg);
 
+/* Essa é a função auxiliar que insere um registro no arquivo */
 static void bin_InsertRegister(FILE *file, HEADER *header, REGISTER *reg);
 
 /* Lê um registro atual da stdin com parâmetros de search */
@@ -52,7 +53,7 @@ static void bin_Search(FILE *file, REGISTER *base){
 
 		/* se os dois forem iguais, imprima um registro com quebra de linha */
 		if(cmp){
-			register_print(reg);
+			register_printAll(reg);
 			found = 1;
 			printf("\n");
 		}
@@ -85,24 +86,29 @@ static int bin_CreateIndexFromFILE(FILE *dados, char *saida){
 
 	h = header_read(dados);
 
+	/* se o header estiver inválido, não criar o index */
 	if(h->status != '1'){
 		printf("Falha no processamento do arquivo.\n");
 		header_free(h);
 		return 0;
 	}
 
+	/* abrir o index */
 	index = fopen(saida, "wb");
 
 	h_ind = headerInd_create();
 	reg_ind = registerInd_create();
 
+	/* setar o tamanho para a soma de todos os registros */
 	tam = h->nroRegArq + h->nroRegRem;
 	header_free(h);
 
 	fseek(index, HEADER_SIZE_IND, SEEK_SET);
 	for(int i = 0; i < tam; i++){
+		/* ler registro por registro */
 		reg = register_readFromBIN(dados);
 
+		/* checar se o registro é removido ou não */
 		if(reg->removido != '1'){
 			reg_ind->id = reg->id;
 			/* Considerando que o ponteiro de leitura estará imediatamente
@@ -119,6 +125,7 @@ static int bin_CreateIndexFromFILE(FILE *dados, char *saida){
 	h_ind->status = '1';
 	
 	rewind(index);
+	/* escrever o cabeçalho do arquivo de index */
 	headerInd_write(index, h_ind);
 
 	headerInd_free(h_ind);
@@ -513,7 +520,7 @@ void bin_SelectFrom(char *entrada){
 		if(reg == NULL)
 			continue;
 
-		register_print(reg);
+		register_printAll(reg);
 
 		register_free(reg);
 		printf("\n");
@@ -525,6 +532,7 @@ void bin_SelectFrom(char *entrada){
 
 void bin_SelectFrom_Where(char *entrada, int num_buscas){
 	FILE *file;
+	HEADER *h;
 	REGISTER *base;
 
 	/* Nessa função, usaremos um registro de base,
@@ -536,6 +544,14 @@ void bin_SelectFrom_Where(char *entrada, int num_buscas){
 	 * do arquivo binário */
 	if(file == NULL){
 		printf("Falha no processamento do arquivo.\n");
+	}
+
+	h = header_read(file);
+
+	if(h->status != '1'){
+		printf("Falha no processamento do arquivo.\n");
+		header_free(h);
+		return;
 	}
 
 	for(int i = 0; i < num_buscas; i++){
@@ -551,6 +567,7 @@ void bin_SelectFrom_Where(char *entrada, int num_buscas){
 		register_free(base);
 	}
 
+	header_free(h);
 	fclose(file);
 }
 
@@ -566,6 +583,8 @@ void bin_CreateIndex(char *entrada, char *saida){
 		return;
 	}
 
+	/* se a criação do arquivo de índice foi bem sucedida,
+	 * imprimir o binário na tela */
 	if(bin_CreateIndexFromFILE(dados, saida)){
 		binarioNaTela(saida);
 	}
@@ -643,12 +662,14 @@ void bin_InsertInto(char *entrada, char *indice, int num_inserts){
 
 		bin_readRegisterInsert(base);
 
+		/* inserir registro no arquivo */
 		bin_InsertRegister(file, header, base);
 
 		/* liberar a memória utilizado no registro */
 		register_free(base);
 	}
 
+	/* voltar ao início e escrever o header com suas modificações */
 	fseek(file, 0, SEEK_SET);
 	header_write(file, header);
 	header_free(header);
@@ -661,6 +682,7 @@ void bin_InsertInto(char *entrada, char *indice, int num_inserts){
 	bin_CreateIndex(entrada, indice);
 }
 
+/* função de debug, ignorar */
 void bin_debugprintdeletedlist(char *entrada){
 	FILE *file;
 	HEADER *h;
