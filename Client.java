@@ -74,8 +74,8 @@ public class Client {
         output.flush();
 
         // Ler a resposta do servidor
-        char[] buffer = new char[102400];
-        int charsRead = reader.read(buffer, 0, 102400);
+        char[] buffer = new char[204800];
+        int charsRead = reader.read(buffer, 0, 204800);
         if (charsRead != -1) {
             return new String(buffer, 0, charsRead);
         }
