@@ -317,6 +317,7 @@ public class MainFrame extends JFrame {
     private void openScrollableWindow(String response) {
 		JFrame newFrame = new JFrame("Todos os registros");
         newFrame.setSize(600, 400);
+		newFrame.setLocationRelativeTo(null);
 
         JTextArea textArea = new JTextArea(response);
         textArea.setLineWrap(true);
