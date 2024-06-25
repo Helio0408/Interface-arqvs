@@ -116,7 +116,7 @@ public class MainFrame extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    String response = server.sendMessage("2 " + selectedFileName);
+                    String response = server.sendMessage("3 " + selectedFileName + "1\n0\n");
                     processPlayersList(response); // Processa a resposta do servidor
                 } catch (IOException e1) {
                     e1.printStackTrace();
