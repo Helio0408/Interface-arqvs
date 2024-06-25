@@ -31,11 +31,13 @@ public class MainFrame extends JFrame {
         JMenu menuServidor = new JMenu("Servidor");
         menuBar.add(menuServidor);
 
+        JMenuItem mniCarregarCSV = new JMenuItem("Carregar Arquivo CSV");
         JMenuItem mniCarregar = new JMenuItem("Carregar Arquivo");
         JMenuItem mniListar = new JMenuItem("Listar todos os jogadores");
         JMenuItem mniConectar = new JMenuItem("Conectar");
         JMenuItem mniDesconectar = new JMenuItem("Desconectar");
 
+        menuArquivo.add(mniCarregarCSV);
         menuArquivo.add(mniCarregar);
         menuArquivo.add(mniListar);
         menuServidor.add(mniConectar);
@@ -82,6 +84,33 @@ public class MainFrame extends JFrame {
                 } catch (IOException e1) {
                     e1.printStackTrace();
 					JOptionPane.showMessageDialog(MainFrame.this, "Erro ao desconectar.");
+                }
+            }
+        });
+
+        mniCarregarCSV.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+        
+                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                fileChooser.setMultiSelectionEnabled(false);
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Arquivos CSV", "csv");
+                fileChooser.setFileFilter(filter);
+                int result = fileChooser.showOpenDialog(MainFrame.this);
+        
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    selectedFileName = fileChooser.getSelectedFile().getName();
+                    JOptionPane.showMessageDialog(MainFrame.this, "Arquivo selecionado: " + selectedFileName);
+                }
+
+                try {
+					String new_file = selectedFileName.replaceAll(".csv", ".bin");
+                    server.sendMessage("1 " + selectedFileName + " " + new_file);
+					selectedFileName = new_file;
+                } catch (IOException e1) {
+                    e1.printStackTrace();
                 }
             }
         });
@@ -296,6 +325,8 @@ public class MainFrame extends JFrame {
                 playersListModel.addElement("<html>" + sb.toString().trim() + "</html>");
                 sb.setLength(0); // Limpa o StringBuilder para o próximo conjunto de cinco linhas
             }
+
+			if(i > 100) break;
         }
     }
 
